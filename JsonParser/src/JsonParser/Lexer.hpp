@@ -29,8 +29,8 @@ namespace json_parser{
         Token next_token();
 
     private:
-        char peek();
-        bool starts_with(const std::string& target);
+        char peek() const;
+        bool starts_with(const std::string& target) const;
         void advance(size_t amount = 1);
         Token read_number();
         Token read_string();

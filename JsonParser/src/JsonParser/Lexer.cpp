@@ -1,10 +1,8 @@
 #include "Lexer.hpp"
-#include <map>
 
 namespace json_parser{
-    Token::Token(TokenType type_, const std::string& value_ = std::string{}){
+    Token::Token(TokenType type_, const std::string& value_ = std::string{}) : type(type_){
         using std::string_literals::operator""s;
-        type = type_;
         switch(type_){
             case TokenType::LBRACE: value = "{"s; break;
             case TokenType::RBRACE: value = "}"s; break;
@@ -18,12 +16,13 @@ namespace json_parser{
             case TokenType::FALSE: value = "false"s; break;
             case TokenType::NUL: value = "null"s; break;
             case TokenType::END: value = ""s; break;
+            default: ""s; break;
         }
     }
 
     Lexer::Lexer(const std::string& input_) : input(input_) {}
 
-    char Lexer::peek(){
+    char Lexer::peek() const{
         return input[pos];
     }
 
@@ -39,7 +38,7 @@ namespace json_parser{
             pos = input.size() - 1;
     }
 
-    bool Lexer::starts_with(const std::string& target){
+    bool Lexer::starts_with(const std::string& target) const{
         std::string_view sv(input.data() + pos, input.size() - pos);
         return sv.starts_with(target);
     }
