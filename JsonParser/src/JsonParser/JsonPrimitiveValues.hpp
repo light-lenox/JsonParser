@@ -10,38 +10,27 @@ namespace json_parser{
     class JsonNumber : public JsonValue{
         double value;
     public:
-        JsonNumber(double value_) : value(value_) { }
-        std::string to_string() const override {
-            return std::to_string(value);
-        }
+        JsonNumber(double value_);
+        std::string to_string() const override;
     };
 
     class JsonString : public JsonValue{
         std::string value;
     public:
-        JsonString(const std::string& value_) : value(value_) {}
-        std::string to_string() const override {
-            using std::string_literals::operator""s;
-            return "\""s  + value + "\""s;
-        }
+        JsonString(const std::string& value_);
+        std::string to_string() const override;
     };
 
     class JsonBool : public JsonValue{
         bool value;
     public:
-        JsonBool(bool value_) : value(value_) {}
-        std::string to_string() const override{
-            using std::string_literals::operator""s;
-            return value ? "true"s : "false"s;
-        }
+        JsonBool(bool value_);
+        std::string to_string() const override;
     };
 
     class JsonNull : public JsonValue {
     public:
-        JsonNull() {}
-        std::string to_string() const override{
-            return "null";
-        }
+        std::string to_string() const override;
     };
 }
 
