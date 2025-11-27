@@ -4,7 +4,11 @@ namespace json_parser{
     Parser::Parser(const std::string& input) : lex(input) {}
 
     std::unique_ptr<JsonValue> Parser::parse(){
-
+        auto parsed_value = parse_value();
+        if(lex.next_token().type == TokenType::END && parsed_value)
+            return move(parsed_value);
+        ; // error
+        return nullptr;
     }
 
     std::unique_ptr<JsonValue> Parser::parse_value(){
