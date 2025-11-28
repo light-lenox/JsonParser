@@ -21,17 +21,19 @@ namespace json_parser{
     class Lexer{
         const std::string& input;
         size_t pos = 0;
-        bool is_eos = false;
-
-    public:
+        size_t prev_pos = 0;
+        
+        public:
         Lexer(const std::string& input_);
         bool eos();
-        Token next_token();
+        Token get_token();
+        void consume();
 
     private:
         char peek() const;
         bool starts_with(const std::string& target) const;
         void advance(size_t amount = 1);
+        void skip_white_spaces();
         Token read_number();
         Token read_string();
     };

@@ -1,7 +1,7 @@
 #include "Lexer.hpp"
 
 namespace json_parser{
-    Token::Token(TokenType type_, const std::string& value_ = std::string{}) : type(type_){
+    Token::Token(TokenType type_, const std::string& value_) : type(type_){
         using std::string_literals::operator""s;
         switch(type_){
             case TokenType::LBRACE: value = "{"s; break;
@@ -10,7 +10,7 @@ namespace json_parser{
             case TokenType::RBRACKET: value = "]"s; break;
             case TokenType::COLON: value = ":"s; break;
             case TokenType::COMMA: value = ","s; break;
-            case TokenType::STRING: value = "\""s + value_ + "\""s; break;
+            case TokenType::STRING: value = value_; break;
             case TokenType::NUMBER: value = value_ == ""s ? "0"s : value_; break;
             case TokenType::TRUE: value = "true"s; break;
             case TokenType::FALSE: value = "false"s; break;
@@ -20,22 +20,18 @@ namespace json_parser{
         }
     }
 
-    Lexer::Lexer(const std::string& input_) : input(input_) {}
+    Lexer::Lexer(const std::string& input_) : input(input_) { }
 
     char Lexer::peek() const{
         return input[pos];
     }
 
     bool Lexer::eos(){
-        if(is_eos) return true;
-        return is_eos = pos >= input.size();
+        return pos >= input.size();
     }
 
-    void Lexer::advance(size_t amount = 1){
-        if(eos()) return;
+    void Lexer::advance(size_t amount){
         pos += amount;
-        if(eos())
-            pos = input.size() - 1;
     }
 
     bool Lexer::starts_with(const std::string& target) const{
@@ -43,26 +39,40 @@ namespace json_parser{
         return sv.starts_with(target);
     }
 
-    Token Lexer::next_token(){
+    void Lexer::skip_white_spaces(){
+        while(std::isspace(static_cast<unsigned char>(peek())))
+            advance();
+    }
+
+    Token Lexer::get_token(){
+        pos = prev_pos;
         if(eos())
             return Token(TokenType::END);
+        skip_white_spaces();
         switch(peek()){
-            case '{': pos++; return Token(TokenType::LBRACE);
-            case '}': pos++; return Token(TokenType::RBRACE);
-            case '[': pos++; return Token(TokenType::LBRACKET);
-            case ']': pos++; return Token(TokenType::RBRACKET);
-            case ':': pos++; return Token(TokenType::COLON);
-            case ',': pos++; return Token(TokenType::COMMA);
+            case '{': advance(); return Token(TokenType::LBRACE);
+            case '}': advance(); return Token(TokenType::RBRACE);
+            case '[': advance(); return Token(TokenType::LBRACKET);
+            case ']': advance(); return Token(TokenType::RBRACKET);
+            case ':': advance(); return Token(TokenType::COLON);
+            case ',': advance(); return Token(TokenType::COMMA);
             case '"': return read_string();
         }
         if(std::isdigit(peek()) || peek() == '-')
             return read_number();
-        if(starts_with("true"))
+        if(starts_with("true")){
+            advance(4);
             return Token(TokenType::TRUE);
-        if(starts_with("false"))
+        }
+        if(starts_with("false")){
+            advance(5);
             return Token(TokenType::FALSE);
-        if(starts_with("null"))
+        }
+        if(starts_with("null")){
+            advance(4);
             return Token(TokenType::NUL);
+        }
+        return Token(TokenType::END);
     }
 
     Token Lexer::read_string(){
@@ -101,5 +111,10 @@ namespace json_parser{
         return Token(TokenType::NUMBER, input.substr(start, pos - start));
     }
 
+    void Lexer::consume(){
+        if(prev_pos == pos)
+            get_token();
+        prev_pos = pos;
+    }
 
 }

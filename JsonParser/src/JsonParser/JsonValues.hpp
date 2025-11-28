@@ -13,7 +13,7 @@ namespace json_parser{
     class JsonNumber : public JsonValue{
         double value;
     public:
-        JsonNumber(double value_ = 0);
+        JsonNumber(double value_ = 0.);
         std::string to_string() const override;
     };
 
