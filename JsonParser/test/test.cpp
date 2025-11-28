@@ -1,7 +1,6 @@
 #include "../src/JsonParser/Parser.hpp"
 #include <iostream>
 
-
 int main(){
     using std::string_literals::operator""s;
     auto obj = std::make_unique<json_parser::JsonObject>();
@@ -20,5 +19,8 @@ int main(){
     std::string input_2 = R"(["bool_true",null,"string_1","ciao"])";
     json_parser::Parser my_parser(input);
     auto parsed_obj = my_parser.parse();
-    std::cout << parsed_obj->to_string() << std::endl;
+    if(parsed_obj)
+        std::cout << parsed_obj->to_string() << std::endl;
+    else
+        std::cout << "Something went wrong" << std::endl;
 }
